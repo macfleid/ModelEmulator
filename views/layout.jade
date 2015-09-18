@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    title= 'EproServer'
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/ui-bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
+  body(ng-app="myApp")
+      .container-fluid
+          .row
+              .col-md-2.nopadding
+                  block nav
+              .col-md-10.nopadding
+                  block content
