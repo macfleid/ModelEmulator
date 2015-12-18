@@ -1,15 +1,12 @@
 var baseNodeUrl = "http://localhost:3000"
-
-app.controller('ConfigureController', ['$scope', function($scope) {
-    $scope.test = "test configure controller";
-}]);
+var baseEproModelsServerUrl = "http://localhost:8080/EproServer"
 
 ////////////////////////////////////////////////////////////////////////////////
 //--
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * TODO : change url to be configured partially
- * TODO : list only methods
+ * TODO : method : list eproModels methods
  */
 app.controller('_methods', ['GetService', '$scope', function(GetService,$scope) {
     GetService.query("http://localhost:8080/EproServer/model/methods").success(function(data) {
@@ -24,9 +21,17 @@ app.controller('_methods', ['GetService', '$scope', function(GetService,$scope) 
 var setBaseDefinitionModel = function getBaseDefinitionModel($scope,GetService,$urlDefinition,PostService,_baseValuesQuery) {
     GetService.query($urlDefinition).success(function(data) {
         $scope.data = data.syncModel;
+        $scope.dataArray = [];
+        $scope.params = data.params;
         $scope.table = data.name;
-        $scope.definitions=data.definitions;
-        getBaseValues(PostService,$scope,_baseValuesQuery);
+        $scope.definitions= data.definitions;
+        $scope.repeatable = data.unique;
+        //-- init params
+        $scope.fullData = {params : {}, data : $scope.data};
+        if($scope.repeatable)
+            getBaseValues(PostService,$scope,_baseValuesQuery);
+        else
+            getArrayBaseValues(PostService,$scope,_baseValuesQuery);
         getAllTemplates($scope,PostService);
         getKeyInDataTemplates($scope);
     });
@@ -34,20 +39,40 @@ var setBaseDefinitionModel = function getBaseDefinitionModel($scope,GetService,$
 
 var setBaseSaveFunction = function BaseSave($scope,PostService) {
     $scope.save = function() {
-        var data = {data:$scope.data,table:$scope.table};
+        var data = {data : $scope.fullData, table : $scope.table};
         if($scope.data._id){
             PostService.query(baseNodeUrl+"/postData/update",data).success(function(data){
-                //TODO : reload data + message
+                changeMessageServer(false, "Data successfully updated.")
+                if($scope.repeatable)
+                    getBaseValues(PostService,$scope,_baseValuesQuery);
+                else
+                    getArrayBaseValues(PostService,$scope,_baseValuesQuery);
             }).error(function(data) {
-                //TODO : message
+                changeMessageServer(yes, "Error on updating data.")
             });
         } else {
             PostService.query(baseNodeUrl+"/postData/insert",data).success(function(data){
-                //TODO : message
+                changeMessageServer(false, "Data successfully saved.")
+                if($scope.repeatable)
+                    getBaseValues(PostService,$scope,_baseValuesQuery);
+                else
+                    getArrayBaseValues(PostService,$scope,_baseValuesQuery);
             }).error(function(data) {
-                //TODO : message
+                changeMessageServer(yes, "Error on saving data.")
             });
         }
+    }
+    $scope.deleteData = function(data) {
+        var data = {data: data, table: $scope.table};
+        PostService.query(baseNodeUrl + "/postData/delete", data).success(function (data) {
+            changeMessageServer(false, "Data successfully deleted.")
+            if($scope.repeatable)
+                getBaseValues(PostService,$scope,_baseValuesQuery);
+            else
+                getArrayBaseValues(PostService,$scope,_baseValuesQuery);
+        }).error(function (data) {
+            changeMessageServer(yes, "Error on deleting data.")
+        });
     }
 }
 
@@ -59,8 +84,17 @@ var getBaseValues = function getValues(PostService,$scope,_query) {
     });
 }
 
+var getArrayBaseValues = function getValues(PostService,$scope,_query) {
+    PostService.query(baseNodeUrl+"/postData/search", {table:$scope.table,data:_query}).success(function(data) {
+        if(data.length > 0) {
+            $scope.dataArray = data;
+        }
+    });
+}
+
 /**
  * save a new template to database
+ * delete a template from database
  * @param $scope
  */
 var setSaveTemplateFunction = function addElementFromTemplate($scope,PostService) {
@@ -70,9 +104,22 @@ var setSaveTemplateFunction = function addElementFromTemplate($scope,PostService
         }
         var data = {data:template.syncModelDefinition,table:template.name};
         PostService.query(baseNodeUrl+"/postData/insert",data).success(function(data){
-            changeMessageServer(false,$scope,template.name + "successfully saved.")
+            changeMessageServer(false, $scope, template.name + "successfully saved.")
+            getAllTemplates($scope, PostService);
         }).error(function(data) {
-            changeMessageServer(true,$scope,"Error while saving template : " + template.name);
+            changeMessageServer(true, $scope, "Error while saving template : " + template.name);
+        });
+    }
+    $scope.deleteTemplate = function(template, table) {
+        if(!template) {
+            //TODO show error
+        }
+        var data = {data:template, table:table};
+        PostService.query(baseNodeUrl+"/postData/delete",data).success(function(data){
+            changeMessageServer(false, "Template successfully deleted.")
+            getAllTemplates($scope,PostService);
+        }).error(function(data) {
+            changeMessageServer(true,$scope,"Error while deleting template : " + template.name);
         });
     }
 }
@@ -94,7 +141,8 @@ var getAllTemplates = function getAllTemplates($scope,PostService) {
                 }
         }).error(function(data) {
                 console.log("Error while getAllTemplates:"+data);
-            });
+                //TODO message (show error)
+        });
     }
 }
 
@@ -178,8 +226,65 @@ app.controller('ConfigureSites', ['PostService','GetService', '$scope', '$contro
     setSaveTemplateFunction($scope,PostService);
 }]);
 
+app.controller('ConfigureUsers', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Users settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/users",PostService,undefined);
+    setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
+}]);
+
 app.controller('ConfigureMetadata', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
     $scope.title = 'Metadata settings'
     setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/metadata",PostService,undefined);
     setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
+}]);
+
+app.controller('ConfigureEvents', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Metadata Events settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/events",PostService,undefined);
+    setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
+}]);
+
+app.controller('ConfigureEventForms', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Metadata Events settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/eventforms", PostService, undefined);
+    setBaseSaveFunction($scope, PostService);
+    setSaveTemplateFunction($scope, PostService);
+}]);
+
+app.controller('ConfigureForms', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Metadata Events settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/forms",PostService,undefined);
+    setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
+}]);
+
+app.controller('ConfigureItemDef', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Metadata itemDEF settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/itemdef",PostService,undefined);
+    setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
+}]);
+
+app.controller('ConfigureFormItems', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Metadata itemDEF settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/formitems",PostService,undefined);
+    setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
+}]);
+
+app.controller('ConfigureLabels', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Metadata itemDEF settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/labels",PostService,undefined);
+    setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
+}]);
+
+app.controller('ConfigurePatients', ['PostService','GetService', '$scope', '$controller', function(PostService,GetService,$scope,$controller) {
+    $scope.title = 'Metadata itemDEF settings'
+    setBaseDefinitionModel($scope,GetService,"http://localhost:8080/EproServer/model/patients",PostService,undefined);
+    setBaseSaveFunction($scope,PostService);
+    setSaveTemplateFunction($scope,PostService);
 }]);

@@ -9,7 +9,7 @@ app.config(['$routeProvider', '$locationProvider', function($routeProvider, $loc
                 controller: 'HomeController'
             }).
             when('/configure', {
-                templateUrl: 'views/base/index.html',
+                templateUrl: 'views/base/configure.html',
                 controller: 'ConfigureController'
             }).
             when('/instance/settings', {
@@ -17,23 +17,59 @@ app.config(['$routeProvider', '$locationProvider', function($routeProvider, $loc
                 controller: 'ConfigureSettingsInstance'
             }).
             when('/instance/study', {
-                templateUrl: 'views/configure/base.html',
+                templateUrl: 'views/configure/repeatableBase.html',
                 controller: 'ConfigureStudy'
             }).
             when('/instance/sites', {
-                templateUrl: 'views/configure/base.html',
+                templateUrl: 'views/configure/repeatableBase.html',
                 controller: 'ConfigureSites'
             }).
+            when('/instance/users', {
+                templateUrl: 'views/configure/repeatableBase.html',
+                controller: 'ConfigureUsers'
+            }).
             when('/instance/metadata', {
-                templateUrl: 'views/configure/base.html',
+                templateUrl: 'views/configure/repeatableBase.html',
                 controller: 'ConfigureMetadata'
+            }).
+            when('/instance/events', {
+                templateUrl: 'views/configure/repeatableBase.html',
+                controller: 'ConfigureEvents'
+            }).
+            when('/instance/EventForms', {
+                templateUrl: 'views/configure/repeatableBase.html',
+                controller: 'ConfigureEventForms'
+            }).
+            when('/instance/forms', {
+                templateUrl: 'views/configure/repeatableBase.html',
+                controller: 'ConfigureForms'
+            }).
+            when('/instance/itemdef', {
+                templateUrl: 'views/configure/repeatableBase.html',
+                controller: 'ConfigureItemDef'
+            }).
+            when('/instance/formItems', {
+                templateUrl: 'views/configure/repeatableBase.html',
+                controller: 'ConfigureFormItems'
+            }).
+            when('/instance/labels', {
+                templateUrl: 'views/configure/repeatableBase.html',
+                controller: 'ConfigureLabels'
+            }).
+            when('/wss/instance', {
+                templateUrl: 'views/wss/consultation.html',
+                controller: 'WssInstanceController'
+            }).
+            when('/wss/study', {
+                templateUrl: 'views/wss/consultation.html',
+                controller: 'WssStudyController'
             }).
             when('/home', {
                 templateUrl: 'views/base/home.html',
                 controller: 'HomeController'
             }).
             otherwise({
-                redirectTo: '/'
+                redirectTo: '/home'
             });
         //$locationProvider.html5Mode(true);
     }]);

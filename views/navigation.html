@@ -1,28 +1,53 @@
-<ul id="sidebar" class="sidebar nav nav-stacked">
-    <li><a href="#/home">Home</a></li>
-    <li><a href="#">Settings</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="#/instance/settings">InstanceParams</a></li>
-    <li><a href="#/instance/study">Study</a></li>
-    <li><a href="#/instance/sites">Sites</a></li>
-    <li>
-        <a href="#/instance/metadata" type="button" ng-init="isMetadataCollapsed = true"
-            ng-click="isMetadataCollapsed = !isMetadataCollapsed">Metadata</a>
-        <!--metadata second menu-->
-        <div collapse="isMetadataCollapsed" class="">
-            <ul class="nav nav-stacked" style="text-indent: 20px">
-                <li><a href="#/instance/metadata">Settings</a></li>
-                <li><a href="#/instance/metadata">Events</a></li>
-                <li><a href="#/instance/metadata">Forms</a></li>
-                <li><a href="#/instance/metadata">ItemsDEF</a></li>
-                <li><a href="#/instance/metadata">Form-items</a></li>
-                <li><a href="#/instance/metadata">Labels file</a></li>
-            </ul>
-        </div>
-    </li>
-    <li><a href="#/instance/sites">Patients</a></li>
-    <li><a href="#/instance/sites">Form status</a></li>
-    <li><a href="#/instance/sites">Patients data </a></li>
-</ul>
+<div id="sidebar">
+    <ul class="sidebar nav nav-stacked">
+        <li><a ng-init="isSettingsCollapsed = true" ng-click="isSettingsCollapsed = !isSettingsCollapsed" href="#/home">Settings</a></li>
+    </ul>
+
+    <ul class="sidebar nav nav-stacked" collapse="isSettingsCollapsed">
+        <li><a href="#/home">Home</a></li>
+        <li><a href="#/configure">Settings</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#/instance/settings">InstanceParams</a></li>
+        <li><a href="#/instance/study">Study</a></li>
+        <li><a href="#/instance/sites">Sites</a></li>
+        <li><a href="#/instance/users">Users</a></li>
+        <li>
+            <a href="#/instance/metadata" type="button" ng-init="isMetadataCollapsed = true"
+               ng-click="isMetadataCollapsed = !isMetadataCollapsed">Metadata</a>
+            <!--metadata second menu-->
+            <div collapse="isMetadataCollapsed" class="">
+                <ul class="nav nav-stacked" style="text-indent: 20px">
+                    <li><a href="#/instance/metadata">Settings</a></li>
+                    <li><a href="#/instance/events">Events</a></li>
+                    <li><a href="#/instance/forms">Forms</a></li>
+                    <li><a href="#/instance/EventForms">Event-forms</a></li>
+                    <li><a href="#/instance/itemdef">ItemsDEF</a></li>
+                    <li><a href="#/instance/formItems">Form-items</a></li>
+                    <li><a href="#/instance/labels">Labels file</a></li>
+                </ul>
+            </div>
+        </li>
+        <li><a href="#/instance/sites">Patients</a></li>
+        <li><a href="#/instance/sites">Form status</a></li>
+        <li><a href="#/instance/sites">Patients data </a></li>
+    </ul>
+
+    <ul class="sidebar nav nav-stacked">
+        <li><a ng-init="isWssCollapsed = true" ng-click="isWssCollapsed = !isWssCollapsed" href="#/home">WebServices</a></li>
+    </ul>
+
+    <ul id="sidebar2" class="sidebar nav nav-stacked" collapse="isWssCollapsed">
+        <li><a href="#/wss/instance">Intance settings</a></li>
+        <li><a href="#/wss/study">Studies</a></li>
+        <li><a href="#/wss/instance">Sites</a></li>
+        <li><a href="#/wss/instance">Users</a></li>
+        <li><a href="#/wss/instance">Metadata</a></li>
+        <li><a href="#/wss/instance">Events</a></li>
+        <li><a href="#/wss/instance">Forms</a></li>
+        <li><a href="#/wss/instance">Events/forms</a></li>
+    </ul>
+</div>
+
+
 
 

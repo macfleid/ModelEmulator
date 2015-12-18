@@ -1,0 +1,19 @@
+<form novalidate class="simple-form">
+    <div ng-repeat="(key, value) in params track by $index" class="form-group">
+        <div class="input-group" >
+            <span class="input-group-addon">{{key}}</span>
+            <input type="text" ng-model="params[key]" class="form-control" placeholder="tagLabel" aria-describedby="tagLabel" ng-keypress="">
+        </div>
+    </div>
+</form>
+
+<!--<p>-->
+<!--<pre>Params : {{params | json}}</pre>-->
+<!--</p>-->
+
+
+<p>
+    <pre>Data : {{data | json}}</pre>
+</p>
+
+

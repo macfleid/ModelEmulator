@@ -66,6 +66,33 @@ updateInDb = function(table,data,callback) {
     )
 }
 
+/**
+ *
+ * @param table
+ * @param data
+ * @param callback
+ */
+deleteInDb = function(table,data,callback) {
+    if (db == null) {
+        console.log('Empty connection');
+        return;
+    }
+    var collection = db.collection(table);
+    myId = data._id;
+    delete data._id;
+    console.log('#deleting:'+myId);
+    console.log('#data:'+ JSON.stringify(data));
+    collection.deleteOne(
+        {_id: new ObjectID(myId)},
+        {$set: data},
+        function(err,result) {
+            console.log(err);
+            console.log(result.result);
+            callback.send(result);
+        }
+    )
+}
+
 queryInDb = function(table,searchReq,callback) {
     if (db == null) {
         console.log('Empty connection');
@@ -97,6 +124,14 @@ router.post('/update', function(req, res, next) {
     console.log("Data : "+JSON.stringify(req.body.data));
     updateInDb(req.body.table,req.body.data,res);
 });
+
+router.post('/delete', function(req, res, next) {
+    console.log('[called delete]');
+    console.log("Table : "+JSON.stringify(req.body.table));
+    console.log("Data : "+JSON.stringify(req.body.data));
+    deleteInDb(req.body.table,req.body.data,res);
+});
+
 
 router.post('/search', function(req, res, next) {
     console.log('[called search]');

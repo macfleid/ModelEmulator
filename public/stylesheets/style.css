@@ -18,7 +18,6 @@ a {
         position:fixed;
         width:265px;
         margin-right:10px;
-
     }
     #midCol.affix {
         position:static;
@@ -32,12 +31,16 @@ a {
     }
 }
 
+#sidebar {
+    height: 100%;
+    background-color: #49524F;
+}
+
 .sidebar {
     width: auto;
     background-color: #49524F;
     margin-left: -15px;
     height: 100%;
-    position: fixed;
 }
 .sidebar a {
     color: #999999;

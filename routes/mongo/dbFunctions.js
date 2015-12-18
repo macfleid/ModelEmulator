@@ -6,6 +6,27 @@ var MongoClient = require('mongodb').MongoClient;
 
 var db = {};
 var url = 'mongodb://localhost:27017/eproServer';
+////////////////////////////////////////////////////////////////////
+module.exports = {
+    connect : function () {
+
+    },
+    queryInDb : function(table,searchReq,callback) {
+        if (db == null) {
+            console.log('Empty connection');
+            return;
+        }
+        try {
+            var collection = db.collection(table);
+            collection.find(searchReq, {data : 1, _id : 0}).toArray(function (err, res) {
+                console.log('Result:'+JSON.stringify(res));
+                callback(res);
+            });
+        } catch(err) {
+            console.log('Error:'+err);
+        }
+    }
+}
 /////////////////////////////////////////////////////////////////////
 
 MongoClient.connect(url, function(err, db_) {
@@ -76,6 +97,19 @@ queryInDb = function(table,searchReq,callback) {
     collection.find(searchReq).toArray(function (err, res) {
         callback.send(res);
     });
+}
+
+insertInCategorie = function(name,parent) {
+    var collection = db.collection("categories");
+    collection.insertOne(
+        {name:name},
+        function (err, result) {
+            if (err != null) {
+                console.log("Error insertion :" + err)
+            }
+            console.log("Result :" + result)
+        }
+    );
 }
 
 ////////////////////////////////////////////////////////////////////////////

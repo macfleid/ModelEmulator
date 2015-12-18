@@ -9,6 +9,7 @@ var MongoClient = require('mongodb');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var postData = require('./routes/PostData');
+var wsRest = require('./routes/WsRest');
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/postData', postData);
+app.use('/wsrest', wsRest);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,0 +1,149 @@
+<div class="page-header">
+    <h2 class="title"><small>{{title}} - </small> configuration</h2>
+</div>
+
+<div class="alert alert-success" role="alert" ng-show="serverMessage!=null">
+    {{ serverMessage }}
+</div>
+
+<tabset>
+    <tab heading="Data list" ng-show="dataArray.length>0">
+        <ul class="list-group">
+            <li class="list-group-item" ng-repeat="data in dataArray track by $index"
+                ng-init="isTemplateCollapsed=true"
+                ng-click="">
+                <div class="row">
+                    <div class="col-md-10">#{{$index}}
+                        <span ng-repeat="param in data.params">{{param}} </span>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="glyphicon glyphicon-expand" aria-hidden="true" ng-click="isTemplateCollapsed=!isTemplateCollapsed"/>
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"/>
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="deleteData(data)"/>
+                    </div>
+                </div>
+                <div collapse="isTemplateCollapsed" class="container-fluid">
+                    <p></p><pre>{{data | json}}</pre></p>
+                </div>
+            </li>
+        </ul>
+    </tab>
+    <tab heading="Creation">
+        <form novalidate class="simple-form">
+            <br/>
+            <div ng-repeat="(key,value) in data track by $index" class="form-group">
+                <div class="input-group" ng-show="getDataInTemplatesFromKey(key)==null">
+                    <span class="input-group-addon">{{key}}</span>
+                    <input ng-model="data[key]" type="text" class="form-control" placeholder="value" ng-disabled="key=='_id'">
+                </div>
+                <div class="input-group" ng-show="getDataInTemplatesFromKey(key)!=null">
+                    <span class="input-group-addon">{{key}}*</span>
+                    <input type="text" ng-model="view.tmpModels[key]"
+                           typeahead="data as data[getSearchKey(key)] for data in getDataInTemplatesFromKey(key) | filter:{number:$viewValue} | limitTo:8"
+                           class="form-control" placeholder="tagLabel" aria-describedby="tagLabel" ng-keypress="onInputWithDataEnter($event,key,view.tmpModels[key])">
+                </div>
+                <!--list of elements from templates-->
+                <div class="form-group" ng-show="getDataInTemplatesFromKey(key)!=null"  style="margin-top: 5px">
+                    <div class="input-group">
+                        <button ng-repeat="data in data[key] track by $index" ng-click="" class="btn btn-default" type="button">
+                            <span class="label label-primary" style="margin-right: 5px">{{data[getSearchKey(key)]}}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+
+            <h3 class="title"><small>Parameters configuration</small></h3>
+            <div ng-repeat="param in params track by $index" class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">{{param}}</span>
+                    <input ng-model="fullData.params[param]" type="text" class="form-control" placeholder="value">
+                </div>
+            </div>
+            <hr/>
+            <!--<pre>Template : {{data | json }}</pre>-->
+            <!--<pre>FullData : {{fullData | json }}</pre>-->
+            <!--<hr/>-->
+            <div class="btn-group" role="group" aria-label="actions">
+                <button class="btn btn-primary" type="button" ng-click="save()" >save</button>
+                <button type="button" class="btn btn-default">delete</button>
+                <button type="button" class="btn btn-default">Right</button>
+            </div>
+        </form>
+    </tab>
+    <tab heading="Definitions" ng-show="definitions.length>0">
+        <br/>
+        <div ng-repeat="template in definitions track by $index" class="form-group">
+            <!--data like template -->
+            <div class="panel panel-default">
+                <div class="panel-heading">{{template.name}} <i>searchKey: {{ template.searchKey }}</i></div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="data in template.data track by $index"
+                        ng-init="isTemplateCollapsed=true"
+                        ng-click="">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <span class="glyphicon glyphicon-expand" aria-hidden="true" ng-click="isTemplateCollapsed=!isTemplateCollapsed"/>
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true" ng-click="deleteTemplate(data, template.name)"/>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"/>
+                            </div>
+                            <div class="col-sm-10">{{$index}} -  {{ data[template.searchKey] }}</span></div>
+                        </div>
+                        <div collapse="isTemplateCollapsed" class="container-fluid">
+                            <p></p><pre>{{data | json}}</pre></p>
+                            <p></p><pre>template : {{template | json}}</pre></p>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        <div ng-repeat="template in definitions track by $index" class="form-group">
+            <!--create template-->
+            <div class="panel panel-default">
+                <div class="panel-heading" ng-init="isCollapsed = true" ng-click="isCollapsed = !isCollapsed">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp; {{template.key}}
+                </div>
+                <div class="panel-body" collapse="isCollapsed">
+                    <form novalidate class="simple-form">
+                        <div ng-repeat="(key,value) in template.syncModelDefinition track by $index" class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">{{key}}</span>
+                                <input ng-model="template.syncModelDefinition[key]" type="text" class="form-control" placeholder="value">
+                            </div>
+                        </div>
+                        <button class="btn btn-default" type="button" ng-click="saveTemplate(template)" >
+                            save
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--<p></p><pre>{{definitions | json}}</pre></p>-->
+    </tab>
+    <tab heading="Import">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                Import from an existing plateform
+            </div>
+        </div>
+        <form novalidate class="simple-form">
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">Url</span>
+                    <input ng-model="importUrl" type="text" class="form-control" placeholder="value">
+                </div>
+            </div>
+            <div class="input-group">
+                <button class="btn btn-default" type="button" ng-click="" >Import</button>
+            </div>
+        </form>
+    </tab>
+    <tab heading="Export">
+
+    </tab>
+</tabset>
+
+
+
+
